@@ -6,11 +6,14 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https://iot-api.heclouds.com; object-src 'none'; base-uri 'self'; form-action 'none'">
   <meta name="description" content="时序云端在线日历：设备时间、温湿度、酒精检测与电机调速，让设备状态清晰可见。">
-  <meta name="theme-color" content="#f4f6f8">
+  <meta name="theme-color" content="#214f42">
   <title>时序 · 万年历 | 云端在线日历</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./assets/style.css">
+  <link rel="stylesheet" href="./assets/refinement.css">
+  <link rel="stylesheet" href="./assets/instrument.css">
   <script type="module" src="./assets/app.js"></script>
+  <script type="module" src="./assets/presentation.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#monitor">跳到设备数据</a>
@@ -21,22 +24,26 @@
     <symbol id="i-fan" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M11 10C6 5 13-1 15 5c1 2-1 4-2 5M14 12c7-2 9 7 3 7-3 0-4-3-4-5M11 14c-2 7-11 4-8-1 2-2 4-2 7-1"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="m9 15 6-6M8 13l-2 2a4 4 0 0 0 6 6l3-3M16 11l2-2a4 4 0 0 0-6-6L9 6"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M20 12a8 8 0 0 0-14-5M4 12a8 8 0 0 0 14 5"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4M10 10h4v4h-4Z"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3 9a14 14 0 0 1 18 0M6 12a9 9 0 0 1 12 0M9 15a4.5 4.5 0 0 1 6 0"/><circle cx="12" cy="19" r=".8"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 0-10 6 6 0 0 1 11 1 4.5 4.5 0 0 1 0 9Z"/></symbol>
+    <symbol id="i-screen" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol>
   </defs></svg>
   <div class="shell">
     <header class="topbar">
-      <a class="brand" href="#monitor" aria-label="时序万年历首页"><span class="brand-mark">时</span><span><strong>时序 · 万年历</strong><small>CALENDAR / DEVICE</small></span></a>
+      <a class="brand" href="#monitor" aria-label="时序万年历首页"><span class="brand-mark">时</span><span><strong>时序 · 万年历</strong><small>SHIXU / CONNECTED CALENDAR</small></span></a>
       <div class="header-actions"><span class="edition"><i aria-hidden="true"></i>云端在线日历</span><button id="config-open" class="button secondary" type="button"><svg class="icon"><use href="#i-link"/></svg>连接设备</button></div>
     </header>
-    <nav class="navigation" aria-label="页面导航"><div><a href="#monitor" class="active">实时数据</a><a href="#expansion">拓展功能</a><a href="#history">历史趋势</a><a href="#settings" class="nav-settings">设备设置 <span aria-hidden="true">↗</span></a></div><span class="auto-refresh">自动刷新 <strong>5</strong> 秒</span></nav>
-    <p class="page-intro">OneNET云端连接 · 真实设备回传 · 手机与电脑共用</p>
+    <nav class="navigation" aria-label="页面导航"><div><a href="#monitor" class="active" aria-current="location">实时数据</a><a href="#expansion">拓展功能</a><a href="#history">历史趋势</a><a id="settings-open" href="#settings" class="nav-settings">设备设置 <span aria-hidden="true">↗</span></a></div><span class="auto-refresh"><i class="refresh-dot" aria-hidden="true"></i>每 <strong>5</strong> 秒自动更新</span></nav>
     <div class="connection-strip" aria-label="设备连接状态"><span class="live-label"><i id="connection-dot" class="dot"></i><strong id="connection-label">尚未连接</strong></span><span id="connection-note" class="connection-note">连接设备后查看最新状态</span><span class="report-summary">最近上报 <time id="summary-report">--</time></span></div>
     <section id="welcome" class="welcome"><div><strong>连接你的万年历</strong><p>安全填写设备授权，即可查看数据与远程设置。授权仅用于当前页面。</p></div><button id="welcome-connect" class="button" type="button">开始连接 <span aria-hidden="true">↗</span></button></section>
     <noscript><p class="notice error">浏览器未启用JavaScript，无法读取设备。请启用后重试；不会发送任何控制。</p></noscript>
     <div id="network-notice" class="notice" role="status" hidden></div>
+    <div id="control-summary" class="notice control-summary" role="status" hidden><span id="control-summary-text"></span><button id="control-summary-open" class="text-button" type="button">查看详情 ↗</button></div>
 
     <section id="monitor" class="hero card" aria-label="设备日期与时间">
-      <div class="clock-panel"><div class="card-heading"><span class="eyebrow">多功能电子万年历</span><span id="clock-source" class="tiny-label">等待设备上报</span></div><div class="date-line"><span id="device-date">等待设备日期</span><span id="device-weekday">星期 --</span></div><div id="device-clock" class="clock">--:--:--</div><div class="clock-bottom"><span id="clock-note"><i class="dot"></i>仅显示51实际回传的设备时间</span><button id="refresh" class="text-button" type="button" disabled><svg class="icon"><use href="#i-refresh"/></svg>刷新状态</button></div></div>
-      <div class="month-panel"><div class="month-heading"><strong>月历</strong><span id="month-label">---- / --</span></div><div class="month-week" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div id="month-days" class="month-days" aria-label="等待设备日期"></div><p>以设备日期为准</p></div>
+      <div class="clock-panel"><div class="clock-decoration" aria-hidden="true"><i></i><i></i><i></i></div><div class="card-heading"><span class="eyebrow">THE MOMENT, CONNECTED.</span><span id="clock-source" class="tiny-label">等待设备上报</span></div><div class="date-line"><span id="device-date">等待设备日期</span><span id="device-weekday">星期 --</span></div><div id="device-clock" class="clock">--:--:--</div><div class="clock-bottom"><span id="clock-note"><i class="dot"></i>仅显示51实际回传的设备时间</span><button id="refresh" class="text-button" type="button" disabled><svg class="icon"><use href="#i-refresh"/></svg>刷新状态</button></div></div>
+      <div class="month-panel"><div class="month-heading"><strong>设备月历</strong><span id="month-label">---- / --</span></div><div class="month-week" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div id="month-days" class="month-days" aria-label="等待设备日期"></div><p>以设备日期为准</p></div>
     </section>
 
     <div class="dashboard-layout"><main>
@@ -46,18 +53,39 @@
         <article class="card alarm-card"><div class="card-heading"><h2>设备报警</h2><span id="alarm-badge" class="badge">待上报</span></div><strong id="alarm-title" class="alarm-title">等待状态上报</strong><div class="limit-row"><span>温度范围</span><strong id="temperature-range">等待阈值上报</strong></div><div class="limit-row"><span>湿度范围</span><strong id="humidity-range">等待阈值上报</strong></div><p id="alarm-note">由51判定，不把旧报警作为当前状态。</p></article>
       </section>
 
-      <section id="expansion" class="section"><div class="section-heading"><div><span class="eyebrow">MORE POSSIBILITIES</span><h2>拓展功能</h2></div><span>真实采集 · 实际回报</span></div>
+      <section id="expansion" class="section"><div class="section-heading"><div><span class="eyebrow">SENSE &amp; CONTROL</span><h2>拓展功能<span class="section-count" aria-label="两项拓展功能">02</span></h2></div><span>感知环境的变化，掌握设备的运行。</span></div>
         <div class="expansion-grid">
-          <article class="card alcohol-card"><div class="card-heading"><div class="feature-title"><span class="icon-tile"><svg class="icon"><use href="#i-flask"/></svg></span><div><h3>酒精检测</h3><p>MQ-3 · 模拟量采样</p></div></div><span id="alcohol-badge" class="badge">待上报</span></div><div class="alcohol-reading"><div class="feature-value"><span id="alcohol-voltage">--</span><small>V</small></div><div class="index-reading"><span>相对响应指数</span><strong><span id="alcohol-index">--</span><small> / 100</small></strong></div></div><div class="response-track"><i id="alcohol-bar"></i></div><div class="chart-head"><span>本次浏览 · 采样变化</span><span id="alcohol-count">0 个有效点</span></div><div id="alcohol-chart" class="chart-slot small-chart" role="img" aria-label="等待真实酒精采样"></div><div class="card-footnote"><span>12位ADC <strong id="alcohol-raw">--</strong> / 4095</span><span>参考电压 5V</span></div><p class="disclaimer">响应指数不是ppm或真实酒精浓度，不用于酒驾或安全判定。</p></article>
-          <article class="card motor-card"><div class="card-heading"><div class="feature-title"><span class="icon-tile"><svg class="icon"><use href="#i-fan"/></svg></span><div><h3>电机调速</h3><p>51 PWM · 四档控制</p></div></div><span class="badge">最高60%</span></div><div class="motor-reading"><div><span class="field-label">设备实际档位</span><strong id="motor-level">--</strong></div><div><span class="field-label">PWM占空比</span><strong><span id="motor-pwm">--</span><small>%</small></strong></div></div><div class="motor-steps" aria-label="电机档位"><button type="button" data-motor="0" disabled><span class="gear-symbol">■</span><strong>停止</strong><small>0%</small></button><button type="button" data-motor="1" disabled><span class="gear-symbol">▂</span><strong>低档</strong><small>40%</small></button><button type="button" data-motor="2" disabled><span class="gear-symbol">▂▅</span><strong>中档</strong><small>50%</small></button><button type="button" data-motor="3" disabled><span class="gear-symbol">▂▅▇</span><strong>高档</strong><small>60%</small></button></div><p id="motor-note" class="motor-note">连接后核对实际档位与PWM，未就绪不开放控制。</p><p class="safety-note">网络停止不等于急停。断网不会自动停机；异常时请用板上按键或断电处理。</p></article>
+          <article class="card alcohol-card">
+            <div class="card-heading"><div class="feature-title"><span class="icon-tile"><svg class="icon"><use href="#i-flask"/></svg></span><div><h3>酒精检测</h3><p>MQ-3 / ANALOG SENSING</p></div></div><span id="alcohol-badge" class="badge">待上报</span></div>
+            <div class="alcohol-reading"><div><span class="field-label">相对响应指数</span><div class="feature-value"><span id="alcohol-index">--</span><small>/ 100</small></div></div><div class="voltage-reading"><span class="field-label">采样电压</span><strong><span id="alcohol-voltage">--</span><small>V</small></strong><span>5V 参考换算</span></div></div>
+            <div class="response-track"><i id="alcohol-bar"></i></div>
+            <div class="response-labels"><span>0</span><span>相对响应 · 非浓度标定</span><span>100</span></div>
+            <div class="alcohol-stats"><div><span>12位 ADC</span><strong id="alcohol-raw">--</strong></div><div><span>曲线峰值指数</span><strong><span id="alcohol-peak">--</span><small>/ 100</small></strong></div></div>
+            <div class="chart-head"><span><i class="chart-key"></i>电压变化 <small>V</small></span><span id="alcohol-count">0 个有效点</span></div><div id="alcohol-chart" class="chart-slot small-chart" role="img" aria-label="等待真实酒精采样"></div>
+            <div class="card-footnote"><span>本次浏览 · 最近一小时有效采样</span><span>5V 参考</span></div><p class="disclaimer">响应指数仅供观察，不是ppm或真实酒精浓度。</p>
+          </article>
+          <article class="card motor-card">
+            <div class="card-heading"><div class="feature-title"><span class="icon-tile"><svg class="icon"><use href="#i-fan"/></svg></span><div><h3>电机调速</h3><p>DC MOTOR / PWM CONTROL</p></div></div><span id="motor-badge" class="badge">待上报</span></div>
+            <div class="motor-instrument"><svg id="motor-dial" viewBox="0 0 330 224" role="img" aria-label="等待有效PWM回报，刻度0至100%"></svg><div class="dial-value"><svg id="motor-fan" class="icon"><use href="#i-fan"/></svg><strong><span id="motor-pwm">--</span><small>%</small></strong><span>PWM 占空比</span></div></div>
+            <div class="motor-state"><div><span class="field-label">设备实际档位</span><strong id="motor-level">--</strong></div><span>最高设定 60%<small class="reading-detail">不是实测转速</small></span></div>
+            <div class="motor-choice-label"><span>选择运行档位</span><span>设备确认后点亮</span></div>
+            <div class="motor-steps" aria-label="电机档位">
+              <button type="button" data-motor="0" disabled><span class="gear-symbol stop-symbol" aria-hidden="true"></span><strong>停止</strong><small><b>0</b>%</small></button>
+              <button type="button" data-motor="1" disabled><span class="gear-symbol signal-bars level-one" aria-hidden="true"><i></i><i></i><i></i></span><strong>低档</strong><small><b>40</b>%</small></button>
+              <button type="button" data-motor="2" disabled><span class="gear-symbol signal-bars level-two" aria-hidden="true"><i></i><i></i><i></i></span><strong>中档</strong><small><b>50</b>%</small></button>
+              <button type="button" data-motor="3" disabled><span class="gear-symbol signal-bars level-three" aria-hidden="true"><i></i><i></i><i></i></span><strong>高档</strong><small><b>60</b>%</small></button>
+            </div>
+            <p id="motor-note" class="motor-note">连接后核对实际档位与PWM，未就绪不开放控制。</p><p class="safety-note"><span aria-hidden="true">!</span>断网不会自动停机。异常时请用板上按键或断电处理。</p>
+          </article>
         </div>
       </section>
 
       <section id="history" class="section card history-card"><div class="section-heading"><div><h2>温湿度变化</h2><p id="history-mode">本次浏览收到的有效样本 · 不生成模拟数据</p></div><button id="load-history" class="button secondary compact" type="button" disabled>读取最近一小时</button></div><div class="chart-legend"><span class="legend-temp">温度 °C · 左轴</span><span class="legend-humidity">湿度 %RH · 右轴</span></div><div id="environment-chart" class="chart-slot environment-chart" role="img" aria-label="暂无有效温湿度采样"></div><p id="history-note" class="disclaimer">历史曲线按需读取，不阻塞首次打开和实时监测。</p></section>
       <section class="connection-details"><details><summary>连接信息与操作记录</summary><dl><div><dt>ESP网关</dt><dd id="gateway-status">尚未连接</dd></div><div><dt>51采集</dt><dd id="mcu-status">待上报</dd></div><div><dt>最近上报</dt><dd id="last-report">--</dd></div><div><dt>刷新间隔</dt><dd>5秒 · 后台标签页暂停</dd></div></dl><p id="device-identity">未配置设备</p><ol id="operation-log"><li>本次浏览尚无控制记录。</li></ol></details></section>
+      <section class="system-architecture" aria-labelledby="architecture-title"><div><span class="eyebrow">CONNECTED BY DESIGN</span><h2 id="architecture-title">从一块主控，到云端日历。</h2><p>系统架构示意 · 不表示当前连接状态</p></div><div class="architecture-chain"><div><svg class="icon"><use href="#i-chip"/></svg><strong>51 主控</strong><small>采集与执行</small></div><span aria-hidden="true"></span><div><svg class="icon"><use href="#i-wifi"/></svg><strong>ESP8266</strong><small>无线网关</small></div><span aria-hidden="true"></span><div><svg class="icon"><use href="#i-cloud"/></svg><strong>OneNET</strong><small>云端数据</small></div><span aria-hidden="true"></span><div><svg class="icon"><use href="#i-screen"/></svg><strong>云端日历</strong><small>查看与控制</small></div></div></section>
     </main>
 
-    <aside id="settings" class="settings-card card"><div class="section-heading"><div><h2>远程设置</h2><p>先核对设备，再发送一次</p></div><span id="settings-status" class="badge">未就绪</span></div>
+    <div id="settings-host"><aside id="settings" class="settings-card card"><div class="section-heading"><div><h2 id="settings-heading">远程设置</h2><p>先核对设备，再发送一次</p></div><div class="settings-heading-actions"><span id="settings-status" class="badge">未就绪</span><button id="settings-close" class="icon-button" type="button" aria-label="关闭远程设置">×</button></div></div>
       <div id="command-notice" class="notice" role="status" hidden></div>
       <div id="review-panel" class="review-panel" hidden><strong>有一条控制结果需要核对</strong><p>操作可能已经执行。先刷新查看设备实际状态，不要盲目重复下发；刷新或重开网页不会自动重发。</p><button id="review-refresh" class="button secondary compact" type="button">刷新核对</button><button id="review-clear" class="button secondary compact" type="button" disabled>已核对实际状态，解除提示</button></div>
       <div id="control-progress" class="progress-panel" hidden><span class="spinner" aria-hidden="true"></span><span id="progress-label">正在等待设备确认…</span><button id="cancel-wait" class="text-button" type="button">结束等待</button><small>结束等待不代表取消设备执行，也不会让电机停止。</small></div>
@@ -67,10 +95,11 @@
       <section id="panel-humidity" role="tabpanel" aria-labelledby="tab-humidity" hidden><form id="humidity-form"><p class="form-intro">湿度范围独立设置，保存后由51写入EEPROM。</p><div class="input-pair"><label>下限 %RH<input id="draft-h-low" type="number" min="0" max="100" step="1" required disabled></label><label>上限 %RH<input id="draft-h-high" type="number" min="0" max="100" step="1" required disabled></label></div><button type="submit" class="button full" data-requires="humidity" disabled>保存湿度范围</button></form></section>
       <section id="panel-sound" role="tabpanel" aria-labelledby="tab-sound" hidden><p id="sound-status" class="form-intro">等待有效报警状态。</p><button id="mute" class="button full" type="button" disabled>临时消音约10秒</button><button id="unmute" class="button secondary full" type="button" disabled>恢复声音</button><p class="disclaimer">临时消音不清除越限状态。约10秒后仍超限，51会再次报警。</p></section>
       <div class="settings-bottom"><div><span>温度实际范围</span><strong id="settings-temperature">-- °C 至 -- °C</strong></div><div><span>湿度实际范围</span><strong id="settings-humidity">--% 至 --%</strong></div><button id="reload-drafts" class="text-button" type="button" disabled>重新载入设备设置</button></div><p class="disclaimer">自动刷新不覆盖正在编辑的草稿。请勿同时从按键、蓝牙和网页争用控制。</p>
-    </aside></div>
+    </aside></div></div>
     <footer><span>时序 · 多功能电子万年历 <span class="footer-note">设备数据以实际回传为准</span></span><a href="https://shixu-calendar-van.streamlit.app/" target="_blank" rel="noopener noreferrer">备用在线入口 ↗</a></footer>
   </div>
 
   <dialog id="config-dialog" aria-labelledby="config-title"><form id="config-form" autocomplete="off"><div class="dialog-heading"><div><span class="eyebrow">ONENET / DIRECT CONNECTION</span><h2 id="config-title">连接你的设备</h2></div><button id="config-close" class="icon-button" type="button" aria-label="关闭连接配置">×</button></div><p class="form-intro">网页在浏览器中直接访问OneNET，不经过Streamlit服务器。请使用设备级HTTP API Token，不要填写AccessKey或Wi-Fi密码。</p><label>产品ID<input id="config-product" type="text" maxlength="128" required autocomplete="off" spellcheck="false" placeholder="OneNET产品ID"></label><label>设备名称<input id="config-device" type="text" maxlength="128" required autocomplete="off" spellcheck="false" placeholder="OneNET设备名称"></label><label>设备级HTTP Token<input id="config-token" type="password" required autocomplete="off" spellcheck="false" placeholder="粘贴完整Token，仅用于当前页面"></label><p class="privacy-note">只记住产品ID和设备名称；Token不进入网址、日志、浏览器存储或GitHub。刷新或关闭页面后需重新填写Token。不要在不信任的页面输入。</p><p id="config-error" class="notice error" role="alert" hidden></p><div class="dialog-actions"><button id="disconnect" class="button secondary" type="button" disabled>断开并清除授权</button><button class="button" type="submit">连接设备</button></div></form></dialog>
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-heading"></dialog>
 </body>
 </html>

@@ -1,5 +1,6 @@
 import { OneNetClient, RequestScope } from "./api.js";
 import { PublicError, MOTOR_NAMES, liveSnapshot, propertyMap, stamp, validateParams } from "./model.js";
+import { drawMotorDial } from "./instrument.js";
 
 const $ = id => document.getElementById(id);
 const put = (id, value) => { $(id).textContent = value; };
@@ -91,7 +92,7 @@ const svgNode = (tag, attrs = {}, text) => {
 };
 
 function drawChart(target, series, { small = false, empty = "等待真实采样", leftDomain = [0, 40], rightDomain = [0, 100] } = {}) {
-  const root = $(target), width = 600, height = small ? 170 : 220;
+  const root = $(target), width = Math.max(320, Math.round(root.clientWidth || 600)), height = small ? 170 : 220;
   const left = small ? 28 : 34, right = small ? 12 : 35, top = 15, bottom = 27;
   const data = series.flatMap(item => item.points), times = data.map(point => point.at);
   let start = Math.min(...times), end = Math.max(...times);
@@ -102,8 +103,8 @@ function drawChart(target, series, { small = false, empty = "等待真实采样"
     const ratio = i / 4, y = top + ratio * (height - top - bottom);
     svg.append(svgNode("line", { x1: left, x2: width - right, y1: y, y2: y, stroke: "#e7ede2", "stroke-width": 1 }));
     const val = leftDomain[1] - ratio * (leftDomain[1] - leftDomain[0]);
-    svg.append(svgNode("text", { x: left - 7, y: y + 4, fill: "#96a38b", "font-size": small ? 12 : 11, "text-anchor": "end" }, Number(val.toFixed(1)).toString()));
-    if (!small) svg.append(svgNode("text", { x: width - right + 7, y: y + 4, fill: "#96a38b", "font-size": 11 }, String(rightDomain[1] - ratio * (rightDomain[1] - rightDomain[0]))));
+    svg.append(svgNode("text", { x: left - 7, y: y + 4, fill: "#7c8d75", "font-size": 12, "text-anchor": "end" }, Number(val.toFixed(1)).toString()));
+    if (!small) svg.append(svgNode("text", { x: width - right + 7, y: y + 4, fill: "#7c8d75", "font-size": 12 }, String(rightDomain[1] - ratio * (rightDomain[1] - rightDomain[0]))));
   }
   for (let i = 0; i < 3; i++) {
     const at = start + (end - start) * i / 2;
@@ -113,11 +114,32 @@ function drawChart(target, series, { small = false, empty = "等待真实采样"
     const domain = item.right ? rightDomain : leftDomain;
     const x = p => left + (p.at - start) / (end - start) * (width - left - right);
     const y = p => top + (domain[1] - p.value) / (domain[1] - domain[0]) * (height - top - bottom);
+    if (small && item.points.length > 1) {
+      const gradientId = `${target}-area`;
+      const gradient = svgNode("linearGradient", { id:gradientId, x1:"0%", y1:"0%", x2:"0%", y2:"100%" });
+      gradient.append(svgNode("stop", { offset:"0%", "stop-color":item.color, "stop-opacity":.17 }), svgNode("stop", { offset:"100%", "stop-color":item.color, "stop-opacity":.015 }));
+      const defs = svgNode("defs"); defs.append(gradient); svg.append(defs);
+      let run = [], previous = null;
+      const paint = () => {
+        if (run.length > 1) {
+          const line = run.map((point, i) => `${i ? "L" : "M"}${x(point).toFixed(2)},${y(point).toFixed(2)}`).join(" ");
+          const base = height - bottom;
+          svg.append(svgNode("path", { d:`${line} L${x(run[run.length - 1]).toFixed(2)},${base} L${x(run[0]).toFixed(2)},${base} Z`, fill:`url(#${gradientId})`, stroke:"none" }));
+        }
+        run = [];
+      };
+      for (const point of item.points) {
+        if (previous && (point.breakBefore || point.at - previous.at > 20000)) paint();
+        run.push(point); previous = point;
+      }
+      paint();
+    }
     let path = "", previous = null;
     for (const point of item.points) {
       const contiguous = previous && !point.breakBefore && point.at - previous.at <= 20000;
       path += `${contiguous ? "L" : "M"}${x(point).toFixed(2)},${y(point).toFixed(2)} `;
-      const circle = svgNode("circle", { cx: x(point).toFixed(2), cy: y(point).toFixed(2), r: item.points.length < 2 ? 3.5 : 2, fill: item.color });
+      const latest = point === item.points[item.points.length - 1];
+      const circle = svgNode("circle", { cx: x(point).toFixed(2), cy: y(point).toFixed(2), r: latest ? 4 : 1.5, fill: item.color, stroke: latest ? "#fffefb" : "none", "stroke-width": latest ? 2 : 0 });
       circle.append(svgNode("title", {}, `${atLabel(point.at)} · ${point.value}${item.unit}`));
       svg.append(circle);
       previous = point;
@@ -132,6 +154,7 @@ function drawChart(target, series, { small = false, empty = "等待真实采样"
 function drawTrends() {
   drawChart("alcohol-chart", [{ points: alcohol, color: "#8aa775", unit: "V" }], { small: true, leftDomain: [0, 5], empty: "等待真实酒精采样" });
   put("alcohol-count", `${alcohol.length} 个有效点`);
+  put("alcohol-peak", alcohol.length ? Math.round(Math.max(...alcohol.map(point => point.value)) * 20) : "--");
   const temperatures = environment.temperature.map(point => point.value);
   const low = Math.min(0, temperatures.length ? Math.floor((Math.min(...temperatures) - 2) / 10) * 10 : 0);
   const high = Math.max(40, temperatures.length ? Math.ceil((Math.max(...temperatures) + 2) / 10) * 10 : 40);
@@ -208,6 +231,9 @@ function render() {
   $("alcohol-bar").style.width = `${state.alcohol_valid ? state.alcohol_index : 0}%`;
   put("motor-level", state.motor_valid ? MOTOR_NAMES[state.motor_level] : "--");
   put("motor-pwm", state.motor_valid ? state.motor_pwm : "--");
+  put("motor-badge", state.motor_valid ? state.motor_level > 0 ? "运行中" : "已停止" : "待上报");
+  $("motor-fan").classList.toggle("running", state.motor_valid && state.motor_level > 0);
+  drawMotorDial($("motor-dial"), state);
   document.querySelectorAll("[data-motor]").forEach(button => {
     const selected = state.motor_valid && Number(button.dataset.motor) === state.motor_level;
     button.disabled = !allowed || !state.motor_control_ready;

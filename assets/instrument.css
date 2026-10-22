@@ -1,0 +1,171 @@
+/* Approved instrument direction: scoped presentation, local assets only. */
+:root { --bg:#f3f3ed; --paper:#fffef9; --ink:#21443a; --line:#dce3d9; --number:"Segoe UI",Arial,system-ui,sans-serif; }
+.shell { max-width:1400px; padding:27px 42px 0; }
+.topbar { padding:0 0 25px; background:none; border:0; border-radius:0; margin-bottom:0; }
+.brand-mark { background:#24584c; box-shadow:inset 0 1px #ffffff25; }
+.brand strong { font-size:23px; font-weight:650; }
+.brand small { color:#78867b; font-size:8px; letter-spacing:.16em; margin-top:5px; }
+.edition { color:#5c786a; }
+.navigation { border-bottom:1px solid #dbe2d6; padding:0 0 13px; margin-bottom:15px; }
+.navigation > div { gap:10px; }
+.navigation a { border-radius:8px; font-size:13px; background:transparent; }
+.navigation a.active { color:#285b4d; border-color:#d6e0ce; background:#fffef8; box-shadow:none; }
+.connection-strip { font-size:11px; margin-bottom:17px; }
+.connection-note { font-size:11px; }
+.hero { grid-template-columns:minmax(0,1fr) 300px; border-radius:23px; border-color:#d9e0d3; box-shadow:0 12px 28px #29483308; }
+.clock-panel { position:relative; padding:25px 32px 23px; overflow:hidden; color:#31584a; background:linear-gradient(115deg,#e8efe5,#f3f6ee); }
+.clock-panel > *:not(.clock-decoration) { position:relative; z-index:1; }
+.clock-decoration { position:absolute; right:-174px; top:-248px; width:620px; height:620px; border-radius:50%; border:1px solid #87a37a20; pointer-events:none; }
+.clock-decoration i { position:absolute; inset:45px; border:1px solid #88a37b26; border-radius:50%; }
+.clock-decoration i:nth-child(2) { inset:90px; }.clock-decoration i:nth-child(3) { inset:135px; }
+.clock-panel .eyebrow { color:#526c5b; font-size:10px; }
+.clock-panel .tiny-label { color:#466452; background:#ffffff60; border:1px solid #b8cbb1; font-size:10px; }
+.date-line { margin-top:25px; color:#416253; }
+.date-line > span:first-child { font-size:25px; letter-spacing:.06em; }
+.date-line > span:last-child { font-size:14px; color:#526c5b; letter-spacing:.08em; }
+.clock { font:500 clamp(72px,8vw,106px)/1.16 var(--number); font-variant-numeric:tabular-nums; letter-spacing:-.035em; color:#31584a; margin-top:9px; }
+.clock.frozen { color:#667d6b; }
+.clock-bottom { margin-top:19px; font-size:11px; color:#556f5c; }
+.clock-bottom .text-button { color:#466452; font-size:11px; }
+.clock-bottom .text-button:disabled { opacity:.6; }
+.month-panel { margin:0; padding:27px 25px 21px; background:#fffef8; border:0; }
+.month-heading { margin-bottom:14px; }
+.month-heading > strong { font-size:19px; }
+.month-heading > span { font-size:14px; color:#8b987e; }
+.month-week { font-size:10px; color:#87967c; margin-bottom:7px; }
+.month-days { gap:2px; }
+.month-days > span { font-size:11px; aspect-ratio:auto; min-height:25px; color:#6b7d65; }
+.month-days > span.today { background:#2b5d4c; border-radius:6px; color:#fffdf0; }
+.month-panel > p { font-size:10px; margin-top:10px; }
+.metrics { grid-template-columns:1fr 1fr 1.28fr; gap:15px; }
+.metric { position:relative; padding:18px 21px 16px; border-radius:15px; }
+.metric .icon-tile { width:25px; height:25px; background:none; }
+.metric .icon { width:19px; height:19px; }
+.metric-value { font-size:39px; margin:8px 0 5px; }
+.metric > p { font-size:10px; }
+.warm { background:#fbf7ed; border-color:#e8dfcb; }.cool { background:#eef5f1; border-color:#d7e4da; }
+.alarm-card { border-radius:15px; background:#fafbf5; padding:18px 20px 16px; }
+.alarm-title { font-size:17px; margin:9px 0 8px; }
+.alarm-card .limit-row { font-size:11px; border:0; padding:1px 0; }
+.alarm-card .limit-row strong { font-size:11px; }
+.alarm-card > p { font-size:10px; }
+.section { margin-top:28px; }
+.section-heading { margin-bottom:17px; }
+#expansion > .section-heading h2 { font-size:25px; font-weight:600; }
+#expansion > .section-heading .eyebrow { font-size:9px; color:#7c926e; }
+#expansion > .section-heading > span { font-size:11px; color:#798c6e; }
+.section-count { background:transparent; border:1px solid #d6decb; font-size:10px; color:#8c9b7f; }
+.expansion-grid { grid-template-columns:1.27fr 1fr; gap:20px; }
+.alcohol-card,.motor-card { padding:25px 26px 21px; border-radius:20px; }
+.alcohol-card { background:#fffef9; border-color:#dce3d3; }
+.feature-title h3 { font-size:19px; font-weight:600; }
+.feature-title p { font:9px var(--number); letter-spacing:.08em; color:#7f8e72; margin-top:5px; }
+.feature-title .icon-tile { width:39px; height:39px; border:1px solid #dde6cc; background:#eaf0df; color:#78905b; }
+.alcohol-reading { margin-top:24px; min-height:0; }
+.field-label { color:#6e835f; font-size:12px; }
+.feature-value { font:500 73px/1.13 var(--number); letter-spacing:-.04em; color:#456735; margin-top:3px; }
+.feature-value small { font-size:15px; color:#82996c; margin-left:9px; }
+.voltage-reading { text-align:right; padding-bottom:7px; }
+.voltage-reading > strong { display:block; color:#486b38; font:500 32px/1.2 var(--number); margin-top:8px; }
+.voltage-reading strong small { font-size:13px; color:#809368; margin-left:4px; }
+.voltage-reading > span:last-child { display:block; font-size:10px; color:#839574; margin-top:6px; }
+.response-track { height:5px; border-radius:4px; margin:17px 0 0; background:repeating-linear-gradient(to right,#e6ecd9 0,#e6ecd9 calc(10% - 3px),transparent calc(10% - 3px),transparent 10%); }
+.response-track > i { background:#8fac6e; border-radius:0; }
+.response-labels { display:flex; justify-content:space-between; color:#8c9c7d; font:10px var(--number); margin-top:7px; }
+.response-labels > span:nth-child(2) { font-size:10px; }
+.alcohol-stats { grid-template-columns:1fr 1fr; gap:15px; margin:17px 0 16px; padding-bottom:15px; }
+.alcohol-stats > div { display:flex; justify-content:space-between; align-items:baseline; gap:5px; }
+.alcohol-stats > div > span { color:#768b63; font-size:11px; }
+.alcohol-stats strong { font-size:19px; color:#5d7845; }
+.chart-head { font-size:11px; color:#70875d; }
+.chart-head > span:last-child { font-size:10px; color:#869674; }
+.small-chart,.small-chart svg { height:155px; }
+.card-footnote { font-size:10px; margin-top:10px; color:#81926f; }
+.alcohol-card .disclaimer { font-size:10px; color:#829470; }
+.motor-card { background:radial-gradient(ellipse at 50% 50%,#e8f0e1a0,transparent 63%),#f8fbf5; border-color:#dce3d3; }
+.motor-card .icon-tile { background:#e2eee3; border-color:#d3e3d3; color:#5d8468; }
+.motor-card .feature-title p { color:#7f9276; }
+.motor-instrument { position:relative; width:min(100%,330px); margin:10px auto 0; }
+.motor-instrument > svg { width:100%; height:auto; display:block; }
+.motor-instrument text { font-family:var(--number); }
+.dial-value { position:absolute; top:61px; left:0; right:0; display:flex; align-items:center; flex-direction:column; pointer-events:none; }
+.dial-value > .icon { width:24px; height:24px; color:#8aab85; margin-bottom:5px; }
+.dial-value strong { font:500 62px/1.03 var(--number); color:#315b44; letter-spacing:-.035em; }
+.dial-value strong small { font:20px var(--number); color:#8aa583; margin-left:4px; }
+.dial-value > span { font-size:11px; color:#6c895f; margin-top:8px; letter-spacing:.04em; }
+.motor-state { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:0 0 14px; }
+.motor-state > div { display:flex; align-items:baseline; gap:8px; }
+.motor-state .field-label { font-size:11px; margin:0; }
+.motor-state strong { font-size:16px; color:#537b51; font-weight:550; }
+.motor-state > span { color:#7a906d; font-size:10px; text-align:right; }
+.motor-state .reading-detail { font-size:10px; color:#839575; margin-top:2px; }
+.motor-choice-label { margin:0; font-size:11px; color:#718962; }
+.motor-choice-label > span:last-child { color:#869a76; font-size:10px; }
+.motor-steps { margin-top:10px; gap:8px; }
+.motor-steps button { min-height:76px; padding:11px 10px; border-color:#dce6d3; background:#fffef9; color:#6b865e; box-shadow:none; }
+.motor-steps button:disabled { opacity:.68; }.motor-steps button.selected:disabled { opacity:1; }
+.motor-steps strong { font-size:12px; }.motor-steps small { color:#829875; }.motor-steps small b { font-size:25px; }
+.motor-steps button.selected { background:#315e46; border-color:#315e46; color:#f8ffec; }
+.gear-symbol { display:none; }
+.motor-note { margin-top:14px; font-size:11px; min-height:0; }
+.safety-note { background:#ecf1e5; color:#798d65; font-size:10px; margin-top:12px; padding:10px; }
+.system-architecture { display:flex; align-items:center; justify-content:space-between; gap:25px; padding:25px 26px; border:1px solid #dce3d3; border-radius:17px; background:#eeefe7; margin-top:23px; }
+.system-architecture h2 { font-size:17px; font-weight:500; margin-top:6px; }
+.system-architecture .eyebrow { font-size:9px; }
+.system-architecture p { font-size:10px; color:#7f9271; margin-top:7px; }
+.architecture-chain { display:flex; align-items:center; flex:1; max-width:600px; }
+.architecture-chain > div { display:flex; align-items:center; flex-direction:column; min-width:65px; }
+.architecture-chain .icon { width:23px; height:23px; color:#789071; margin-bottom:9px; }
+.architecture-chain strong { font-size:11px; font-weight:500; white-space:nowrap; }.architecture-chain small { font-size:10px; color:#839573; margin-top:5px; }
+.architecture-chain > span { height:1px; background:#c9d3bc; flex:1; min-width:12px; margin:0 8px 24px; position:relative; }
+.architecture-chain > span:after { content:""; position:absolute; right:0; top:-2px; width:4px; height:4px; border-top:1px solid #b6c5a5; border-right:1px solid #b6c5a5; transform:rotate(45deg); }
+@media(max-width:1599px) {
+  .dashboard-layout { grid-template-columns:minmax(0,1fr); }
+  #settings-host { display:none; }
+  .metrics { grid-template-columns:1fr 1fr 1.28fr; }
+  .alarm-card { display:block; grid-column:auto; }
+  .expansion-grid { grid-template-columns:1.27fr 1fr; }
+}
+@media(min-width:1600px) { .system-architecture { flex-direction:column; align-items:stretch; }.architecture-chain { max-width:none; } }
+@media(max-width:1000px) {
+  .shell { padding:24px 28px 0; }.hero { grid-template-columns:minmax(0,1fr) 250px; }
+  .clock-panel { padding:25px; }.clock { font-size:clamp(56px,8vw,80px); }.clock-panel .eyebrow { font-size:9px; }
+  .month-panel { padding:25px 19px; }.month-days > span { min-height:25px; }
+  .alcohol-card,.motor-card { padding:23px 21px; }.feature-title h3 { font-size:17px; }.feature-title p { font-size:8px; letter-spacing:.02em; }
+  .feature-title .icon-tile { width:34px; height:34px; }.feature-title { gap:8px; }
+  .alcohol-stats > div { flex-direction:column; }.alcohol-stats strong { font-size:19px; }
+  .motor-state > div { display:block; }.motor-state .field-label { margin-bottom:3px; }
+  .system-architecture { flex-direction:column; align-items:start; }.architecture-chain { width:100%; max-width:none; }
+}
+@media(max-width:800px) { .expansion-grid { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:680px) {
+  .shell { padding:19px 18px 0; }.topbar { padding:0 0 22px; margin-bottom:0; }
+  .brand strong { font-size:18px; }.brand small { font-size:6px; letter-spacing:.1em; }.brand-mark { width:40px; height:40px; }
+  .header-actions > .button { min-height:30px; }.navigation { padding-bottom:13px; margin-bottom:13px; }
+  .navigation > div { gap:3px; }.navigation a { padding:8px 3px; font-size:11px; }
+  .connection-strip { margin-bottom:15px; }.connection-note { font-size:10px; }.hero { display:block; border-radius:20px; }
+  .clock-panel { padding:23px; }.clock-panel .eyebrow { font-size:8px; letter-spacing:.09em; }.clock-panel .tiny-label { font-size:9px; padding:3px 5px; }
+  .date-line { margin-top:25px; }.date-line > span:first-child { font-size:23px; letter-spacing:.025em; }.date-line > span:last-child { font-size:12px; letter-spacing:0; }
+  .clock { font-size:clamp(45px,15.3vw,100px); letter-spacing:-.04em; margin-top:13px; }
+  .clock-bottom { margin-top:20px; font-size:10px; gap:6px; }.clock-bottom .text-button { font-size:10px; }
+  .month-panel { display:none; }.metrics { grid-template-columns:1fr 1fr; gap:10px; }.metric { padding:16px; }
+  .metric h2 { font-size:12px; }.metric-value { font-size:36px; margin:10px 0 6px; }.metric-value small { font-size:12px; }.metric > p { font-size:10px; }
+  .alarm-card { grid-column:1/-1; padding:18px; }.alarm-card .limit-row { display:flex; font-size:11px; padding:3px 0; }.alarm-card .limit-row strong { margin:0; }
+  .alarm-card > p { margin-top:8px; }.section { margin-top:26px; }#expansion > .section-heading h2 { font-size:23px; }
+  #expansion > .section-heading > span { font-size:10px; max-width:128px; text-align:right; line-height:1.8; }
+  .expansion-grid { grid-template-columns:1fr; gap:16px; }.alcohol-card,.motor-card { padding:23px 22px 20px; border-radius:19px; }
+  .feature-title h3 { font-size:19px; }.feature-title p { font-size:8px; }.feature-title .icon-tile { width:37px; height:37px; }
+  .feature-value { font-size:68px; }.feature-value small { font-size:14px; }.voltage-reading > strong { font-size:30px; }
+  .voltage-reading > span:last-child { font-size:9px; }.response-labels { font-size:9px; }.response-labels > span:nth-child(2) { font-size:9px; }
+  .alcohol-stats > div { flex-direction:row; }.alcohol-stats > div > span { font-size:10px; }.alcohol-stats strong { font-size:17px; }
+  .small-chart,.small-chart svg { height:145px; }.card-footnote { font-size:9px; }.alcohol-card .disclaimer { font-size:10px; }
+  .motor-instrument { margin-top:7px; max-width:300px; }.dial-value { top:56px; }.dial-value strong { font-size:57px; }
+  .dial-value > .icon { width:21px; height:21px; margin-bottom:4px; }.dial-value > span { font-size:10px; margin-top:7px; }
+  .motor-state > div { display:flex; }.motor-state .field-label { margin-bottom:0; }.motor-state strong { font-size:16px; }
+  .motor-steps { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }.motor-steps button { min-height:74px; padding:11px 14px; }
+  .motor-steps strong { font-size:13px; }.motor-note,.safety-note { font-size:10px; }
+  .system-architecture { padding:22px 21px; gap:24px; }.system-architecture h2 { font-size:16px; }
+  .architecture-chain > div { min-width:51px; }.architecture-chain strong { font-size:10px; }.architecture-chain small { font-size:8px; }
+  .architecture-chain > span { margin:0 5px 24px; min-width:9px; }.system-architecture p { font-size:9px; }
+}
+@media(prefers-reduced-motion:reduce) { #motor-fan.running { animation:none; } }
