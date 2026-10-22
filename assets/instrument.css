@@ -1,4 +1,7 @@
 /* Approved instrument direction: scoped presentation, local assets only. */
+.config-token-tools { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:5px 10px; margin-top:8px; }
+.config-token-tools > span { font-size:11px; color:#637b5e; }
+.config-token-tools .text-button { font-size:11px; padding:4px 0; color:#52776c; }
 :root { --bg:#f3f3ed; --paper:#fffef9; --ink:#21443a; --line:#dce3d9; --number:"Segoe UI",Arial,system-ui,sans-serif; }
 .shell { max-width:1400px; padding:27px 42px 0; }
 .topbar { padding:0 0 25px; background:none; border:0; border-radius:0; margin-bottom:0; }
@@ -13,20 +16,20 @@
 .connection-strip { font-size:11px; margin-bottom:17px; }
 .connection-note { font-size:11px; }
 .hero { grid-template-columns:minmax(0,1fr) 300px; border-radius:23px; border-color:#d9e0d3; box-shadow:0 12px 28px #29483308; }
-.clock-panel { position:relative; padding:25px 32px 23px; overflow:hidden; color:#31584a; background:linear-gradient(115deg,#e8efe5,#f3f6ee); }
+.clock-panel { position:relative; padding:25px 32px 23px; overflow:hidden; color:#213d34; background:#fffdf8; }
 .clock-panel > *:not(.clock-decoration) { position:relative; z-index:1; }
-.clock-decoration { position:absolute; right:-174px; top:-248px; width:620px; height:620px; border-radius:50%; border:1px solid #87a37a20; pointer-events:none; }
-.clock-decoration i { position:absolute; inset:45px; border:1px solid #88a37b26; border-radius:50%; }
+.clock-decoration { position:absolute; right:-174px; top:-248px; width:620px; height:620px; border-radius:50%; border:1px solid #aea9951c; pointer-events:none; }
+.clock-decoration i { position:absolute; inset:45px; border:1px solid #b7b19e20; border-radius:50%; }
 .clock-decoration i:nth-child(2) { inset:90px; }.clock-decoration i:nth-child(3) { inset:135px; }
-.clock-panel .eyebrow { color:#526c5b; font-size:10px; }
-.clock-panel .tiny-label { color:#466452; background:#ffffff60; border:1px solid #b8cbb1; font-size:10px; }
-.date-line { margin-top:25px; color:#416253; }
+.clock-panel .eyebrow { color:#657064; font-size:10px; }
+.clock-panel .tiny-label { color:#506253; background:#f8f5ed; border:1px solid #ded8c8; font-size:10px; }
+.date-line { margin-top:25px; color:#2b4438; }
 .date-line > span:first-child { font-size:25px; letter-spacing:.06em; }
-.date-line > span:last-child { font-size:14px; color:#526c5b; letter-spacing:.08em; }
-.clock { font:500 clamp(72px,8vw,106px)/1.16 var(--number); font-variant-numeric:tabular-nums; letter-spacing:-.035em; color:#31584a; margin-top:9px; }
-.clock.frozen { color:#667d6b; }
-.clock-bottom { margin-top:19px; font-size:11px; color:#556f5c; }
-.clock-bottom .text-button { color:#466452; font-size:11px; }
+.date-line > span:last-child { font-size:14px; color:#4b5e51; letter-spacing:.08em; }
+.clock { font:500 clamp(72px,8vw,106px)/1.16 var(--number); font-variant-numeric:tabular-nums; letter-spacing:-.035em; color:#213d34; margin-top:9px; }
+.clock.frozen { color:#3e5547; }
+.clock-bottom { margin-top:19px; font-size:11px; color:#60675d; }
+.clock-bottom .text-button { color:#506253; font-size:11px; }
 .clock-bottom .text-button:disabled { opacity:.6; }
 .month-panel { margin:0; padding:27px 25px 21px; background:#fffef8; border:0; }
 .month-heading { margin-bottom:14px; }

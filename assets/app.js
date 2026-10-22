@@ -14,15 +14,64 @@ let review = null, reviewCheckedAt = 0, reviewKey = "", networkError = "", histo
 let alcohol = [], alcoholGap = false, environment = { temperature: [], humidity: [] }, historyMode = false;
 const dirty = new Set(), log = [];
 const draftKeys = ["draft-date", "draft-time", "draft-low", "draft-high", "draft-h-low", "draft-h-high"];
+const SAVED_CONFIG_KEY = "shixu.pages.device.v1";
+let autoFilledToken = "", credentialWarning = "";
 
-function loadPublicConfig() {
+function readSavedConfig() {
   try {
-    const saved = JSON.parse(localStorage.getItem("shixu.pages.device.v1") || "null");
-    if (saved && typeof saved.product === "string" && typeof saved.device === "string") {
-      $("config-product").value = saved.product.slice(0, 128);
-      $("config-device").value = saved.device.slice(0, 128);
-    }
+    const raw = localStorage.getItem(SAVED_CONFIG_KEY);
+    if (!raw || raw.length > 65536) return null;
+    const saved = JSON.parse(raw);
+    if (!saved || [saved.product, saved.device].some(value => typeof value !== "string" || !value.trim() || value.length > 128 || /[\r\n]/.test(value))) return null;
+    const token = typeof saved.token === "string" && saved.token.trim() && saved.token.length <= 16384 && !/[\r\n]/.test(saved.token) ? saved.token.trim() : "";
+    return { product:saved.product.trim(), device:saved.device.trim(), token };
   } catch {}
+  return null;
+}
+
+function savedIdentityMatches(saved) {
+  return saved && saved.product === $("config-product").value.trim() && saved.device === $("config-device").value.trim();
+}
+
+function updateSavedTokenStatus() {
+  const saved = readSavedConfig();
+  put("config-saved-status", saved?.token ? savedIdentityMatches(saved) ? "已记住此设备Token，下次自动填入" : "已记住上次设备Token；连接新设备后替换" : "输入并连接后，自动记住Token");
+  $("config-clear-token").disabled = busy;
+}
+
+function fillSavedToken() {
+  // Changing identity must never carry an automatically filled token to another device.
+  if (autoFilledToken && $("config-token").value === autoFilledToken) $("config-token").value = "";
+  autoFilledToken = "";
+  const saved = readSavedConfig();
+  if (saved?.token && savedIdentityMatches(saved) && !$("config-token").value) {
+    $("config-token").value = saved.token;
+    autoFilledToken = saved.token;
+  }
+  updateSavedTokenStatus();
+}
+
+function loadSavedConfig() {
+  const saved = readSavedConfig();
+  if (saved) { $("config-product").value = saved.product; $("config-device").value = saved.device; }
+  fillSavedToken();
+}
+
+function rememberConfig(config) {
+  // User-requested local persistence only; never embed a token in files, URLs or logs.
+  try {
+    localStorage.setItem(SAVED_CONFIG_KEY, JSON.stringify({ product:config.product, device:config.device, token:config.token }));
+    const saved = readSavedConfig();
+    return saved?.product === config.product && saved?.device === config.device && saved?.token === config.token;
+  } catch { return false; }
+}
+
+function forgetSavedToken() {
+  const saved = readSavedConfig();
+  if (saved) localStorage.setItem(SAVED_CONFIG_KEY, JSON.stringify({ product:saved.product, device:saved.device }));
+  else localStorage.removeItem(SAVED_CONFIG_KEY);
+  const raw = localStorage.getItem(SAVED_CONFIG_KEY);
+  if (raw && Object.hasOwn(JSON.parse(raw), "token")) throw new Error("Token was not removed");
 }
 
 function readReview() {
@@ -258,6 +307,8 @@ function render() {
   put("last-report", atLabel(state.updated_at));
   put("device-identity", connected ? `产品ID：${client.product}　设备：${client.device}` : "未配置设备");
   message("network-notice", networkError, "error");
+  message("credential-notice", credentialWarning);
+  updateSavedTokenStatus();
   loadDrafts(state);
 }
 
@@ -306,7 +357,7 @@ function disconnect() {
   put("history-mode", "本次浏览收到的有效样本 · 不生成模拟数据");
   put("history-note", "历史曲线按需读取，不阻塞首次打开和实时监测。");
   draftKeys.forEach(key => { $(key).value = ""; });
-  $("config-token").value = "";
+  $("config-token").value = ""; autoFilledToken = ""; credentialWarning = "";
   message("command-notice", "");
   render(); drawTrends();
 }
@@ -341,20 +392,30 @@ async function sendCommand(input, label) {
 }
 
 function bind() {
-  const openConfig = () => { message("config-error", ""); $("config-dialog").showModal(); };
+  const openConfig = () => { message("config-error", ""); fillSavedToken(); $("config-dialog").showModal(); };
   $("config-open").addEventListener("click", openConfig);
   $("welcome-connect").addEventListener("click", openConfig);
-  $("config-close").addEventListener("click", () => { $("config-token").value = ""; $("config-dialog").close(); });
-  $("config-dialog").addEventListener("cancel", () => { $("config-token").value = ""; });
+  $("config-close").addEventListener("click", () => { $("config-token").value = ""; autoFilledToken = ""; $("config-dialog").close(); });
+  $("config-dialog").addEventListener("cancel", () => { $("config-token").value = ""; autoFilledToken = ""; });
+  for (const id of ["config-product", "config-device"]) $(id).addEventListener("input", fillSavedToken);
+  $("config-token").addEventListener("input", () => { autoFilledToken = ""; });
+  $("config-clear-token").addEventListener("click", () => {
+    if (busy) return;
+    try {
+      forgetSavedToken(); disconnect(); updateSavedTokenStatus();
+      message("config-error", "已清除保存的Token，并已断开连接；产品ID和设备名称保留。", "success");
+    } catch { message("config-error", "未能清除已保存Token，请检查此站点存储权限后重试。", "error"); }
+  });
   $("disconnect").addEventListener("click", () => { disconnect(); $("config-dialog").close(); });
   $("config-form").addEventListener("submit", event => {
     event.preventDefault(); if (busy) return;
     try {
       const config = { product: $("config-product").value, device: $("config-device").value, token: $("config-token").value };
       const next = new OneNetClient(config);
+      const remembered = rememberConfig(next);
       disconnect(); client = next; reviewKey = `shixu.pages.review.v1.${next.identity()}`;
       readReview();
-      try { localStorage.setItem("shixu.pages.device.v1", JSON.stringify({ product: next.product, device: next.device })); } catch {}
+      credentialWarning = remembered ? "" : "本次仅临时使用Token：浏览器未能保存，下次仍需输入，请检查此站点存储权限。";
       $("config-token").value = ""; $("config-dialog").close();
       render(); void refresh();
     } catch (error) { message("config-error", error instanceof PublicError ? error.message : "连接配置无效", "error"); }
@@ -423,11 +484,11 @@ function bind() {
     currentData = { ...currentData, gateway_status: 0 }; alcoholGap = true; networkError = "浏览器已离线；网络断开不会自动停机。";
     render();
   });
-  window.addEventListener("pagehide", () => { cancelReads(); activeControl?.cancel("页面已离开，请重新打开后核对实际状态"); client?.forget(); $("config-token").value = ""; });
+  window.addEventListener("pagehide", () => { cancelReads(); activeControl?.cancel("页面已离开，请重新打开后核对实际状态"); client?.forget(); $("config-token").value = ""; autoFilledToken = ""; });
   window.addEventListener("pageshow", event => { if (event.persisted && client) disconnect(); });
 }
 
-loadPublicConfig(); bind(); render(); drawTrends();
+loadSavedConfig(); bind(); render(); drawTrends();
 // No network, automatic control or configured secrets on initial load.
 setInterval(() => { if (client && !document.hidden && !busy) void refresh(); }, 5000);
 setInterval(() => { if (client && !document.hidden) render(); }, 1000);
