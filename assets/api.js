@@ -51,7 +51,8 @@ export class OneNetClient {
     this.product = config.product.trim();
     this.device = config.device.trim();
     this.token = config.token.trim();
-    this.fetch = fetchFn;
+    // Native fetch requires its global receiver in Edge/Chromium.
+    this.fetch = fetchFn.bind(globalThis);
     this.now = now;
     this.busy = false;
     this.lastCommandAt = -Infinity;
